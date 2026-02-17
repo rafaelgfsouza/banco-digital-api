@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Rafael Bank - Digital</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <h1>🏦 Rafael Bank</h1>
+
+        <div id="login-section">
+            <h2>Login</h2>
+            <input type="text" id="login-conta" placeholder="Número da Conta (Ex: 3868-43)">
+            <input type="password" id="login-senha" placeholder="Senha">
+            <button onclick="login()">Entrar</button>
+            <p>Não tem conta? <a href="#" onclick="showSection('cadastro-section')">Cadastre-se</a></p>
+        </div>
+
+        <div id="cadastro-section" style="display:none;">
+            <h2>Abrir Conta</h2>
+            <input type="text" id="cad-nome" placeholder="Nome Completo">
+            <input type="text" id="cad-cpf" placeholder="CPF">
+            <input type="email" id="cad-email" placeholder="E-mail">
+            <input type="password" id="cad-senha" placeholder="Senha">
+            <button onclick="cadastrar()">Criar Conta</button>
+            <p><a href="#" onclick="showSection('login-section')">Voltar para Login</a></p>
+        </div>
+
+        <div id="dashboard-section" style="display:none;">
+            <h2>Bem-vindo, <span id="user-name">...</span></h2>
+            <div class="card">
+                <p>Conta: <strong id="user-account">...</strong></p>
+                <p>Saldo: <strong id="user-balance">R$ 0,00</strong></p>
+            </div>
+
+            <hr>
+            <h3>Transferência</h3>
+            <input type="text" id="trans-destino" placeholder="Conta Destino">
+            <input type="number" id="trans-valor" placeholder="Valor R$">
+            <button onclick="transferir()">Transferir Agora</button>
+
+            <br><br>
+            <button class="btn-logout" onclick="logout()">Sair</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

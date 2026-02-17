@@ -30,7 +30,8 @@ public class ClienteService {
 
         // 2. Cria a conta vinculada
         Conta novaConta = new Conta();
-        novaConta.setSaldo(BigDecimal.ZERO);
+        //novaConta.setSaldo(BigDecimal.ZERO);
+        novaConta.setSaldo(new BigDecimal("100.00")); // para testar transferências
         novaConta.setNumeroConta(gerarNumeroConta());
         novaConta.setSenha(encoder.encode(dados.senha())); // Criptografa a senha do DTO
 

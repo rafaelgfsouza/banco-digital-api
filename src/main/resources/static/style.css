@@ -1,0 +1,155 @@
+/* Importando uma fonte moderna */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+:root {
+    --primary: #8a05be; /* Roxo Fintech */
+    --primary-hover: #a333cf;
+    --bg: #0f111a;
+    --card-bg: #1a1d29;
+    --text: #ffffff;
+    --text-dim: #a0a0b1;
+    --success: #00d1b2;
+    --danger: #f14668;
+    --input-bg: #25293a;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+#app {
+    background-color: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+h1 {
+    color: var(--primary);
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-dim);
+}
+
+/* Estilização dos Inputs */
+input {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--input-bg);
+    color: white;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+input:focus {
+    outline: 2px solid var(--primary);
+    background-color: #2d3245;
+}
+
+/* Botões */
+button {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.btn-logout {
+    background-color: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    margin-top: 2rem;
+}
+
+.btn-logout:hover {
+    background-color: var(--danger);
+    color: white;
+}
+
+/* Cards de Dashboard */
+.card {
+    background: linear-gradient(135deg, #2d3245 0%, #1a1d29 100%);
+    padding: 1.5rem;
+    border-radius: 15px;
+    text-align: left;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.card p {
+    margin: 5px 0;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+}
+
+.card strong {
+    color: white;
+    font-size: 1.2rem;
+    display: block;
+    margin-top: 4px;
+}
+
+#user-balance {
+    color: var(--success);
+    font-size: 1.5rem;
+}
+
+/* Links */
+a {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 2rem 0;
+}
+
+/* Animação suave ao trocar de tela */
+#login-section, #cadastro-section, #dashboard-section {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
