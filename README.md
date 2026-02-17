@@ -1,259 +1,183 @@
-🏦 Banking API — Digital Account & Secure Transfer Management
+DIGITAL BANK API — Secure Digital Account & Transfer Management
+=================================================================
 
 A RESTful API for managing digital bank accounts and performing secure financial transfers, built with Java 17 and Spring Boot 3.
 
-This project demonstrates backend engineering best practices, secure architecture design, domain modeling, and transactional consistency in financial operations.
+This project demonstrates advanced backend engineering practices, secure system design, domain-driven structure, and strong transactional consistency in financial operations.
 
-📌 Overview
+
+OVERVIEW
+--------
 
 The application provides:
 
-Bank account creation
+- Customer registration with automatic account generation
+- Stateless authentication using JWT (JSON Web Token)
+- Secure account listing via DTO pattern
+- Token-based identity validation for transfers
+- Full ACID-compliant transactional guarantees
+- Secure password hashing with BCrypt
 
-JWT-based authentication
 
-Secure account listing (DTO-based exposure)
+ARCHITECTURE
+------------
 
-Account-to-account transfers with full validation
+The system follows a layered architecture to ensure scalability, maintainability, and separation of concerns:
 
-ACID-compliant transactional guarantees
+- Controller Layer
+  Handles HTTP requests and response mapping.
 
-Dockerized infrastructure for reproducible environments
+- Service Layer
+  Contains core business logic and critical validations.
+  Responsible for transactional integrity.
 
-🧱 Architecture
+- Repository Layer
+  Data persistence abstraction using Spring Data JPA.
 
-The application follows a layered architecture:
+- DTO Layer
+  Strict control of data exposure to prevent sensitive information leakage.
 
-Controller → Service → Repository → Database
+- Security Layer
+  Authentication and authorization powered by Spring Security and JWT.
 
-Responsibility Separation
 
-Controller → HTTP layer and request handling
+TECH STACK
+----------
 
-Service → Business rules and validation logic
+- Java 17
+- Spring Boot 3
+- Spring Data JPA
+- Hibernate
+- Spring Security
+- JWT (JSON Web Token)
+- PostgreSQL
+- BCrypt (Password hashing)
+- Maven
 
-Repository → Data persistence (Spring Data JPA)
 
-DTOs → Data exposure control
+SECURITY & DATA PROTECTION
+--------------------------
 
-Entities → Domain model representation
+DTO Pattern
+Sensitive data such as passwords, CPF (Brazilian tax ID), and email addresses are never exposed in API responses.
+Only strictly necessary public fields are returned.
 
-Security Layer → Authentication & authorization (JWT)
+Authentication & Identity Control
+- Passwords are stored using BCrypt hashing.
+- Successful login generates a signed JWT Bearer Token.
+- The authenticated account is extracted from the JWT Subject.
+- Users cannot manipulate or access accounts that do not belong to them.
 
-This structure ensures maintainability, testability, and scalability.
+Transactional Consistency (ACID)
+All financial transfers are wrapped with @Transactional to guarantee:
 
-🚀 Tech Stack
+- Atomicity: debit and credit occur together or not at all.
+- Consistency: the system never persists invalid financial states.
+- Isolation: concurrent operations are handled safely.
+- Durability: committed transactions are permanently stored.
 
-Java 17
+This prevents critical inconsistencies such as debiting without crediting.
 
-Spring Boot 3
 
-Spring Data JPA
+API ENDPOINTS
+-------------
 
-Spring Security
+1. Create Customer and Account
+   POST /clientes
 
-JWT (Bearer Token Authentication)
+Creates a customer profile and automatically generates a bank account.
 
-PostgreSQL
-
-Docker & Docker Compose
-
-Maven
-
-🔐 Security & Data Protection
-✔️ DTO Pattern
-
-Sensitive information is never exposed through API responses.
-
-The following data is protected:
-
-Passwords
-
-CPF (Brazilian tax ID)
-
-Email
-
-Only safe, public-facing fields are returned via DTOs.
-
-✔️ Authentication & Authorization
-
-Authentication via /auth/login
-
-JWT token generation
-
-Bearer Token required for protected endpoints
-
-Password validation required before critical operations
-
-✔️ Business Rule Enforcement
-
-During transfers, the system validates:
-
-Correct origin account password
-
-Sufficient available balance
-
-Valid destination account
-
-Prevention of self-transfer
-
-Operation integrity before commit
-
-Any validation failure automatically aborts the operation.
-
-🔄 Transactional Consistency (ACID)
-
-The @Transactional annotation ensures full ACID compliance:
-
-Atomicity → The transfer fully succeeds or fully rolls back
-
-Consistency → The database never reaches an invalid state
-
-Isolation → Concurrent operations are handled safely
-
-Durability → Committed transactions are permanently stored
-
-This prevents critical financial inconsistencies such as debiting without crediting.
-
-🗄️ Persistence Layer
-
-PostgreSQL as relational database
-
-ORM via Spring Data JPA
-
-Proper entity mapping
-
-Clear separation between Entities and DTOs
-
-Clean repository abstraction
-
-🐳 Infrastructure
-
-The project includes Docker configuration for environment standardization.
-
-Start database:
-docker-compose up -d
-
-
-Benefits:
-
-Reproducible environment
-
-Fast setup
-
-Isolation from local configuration issues
-
-Consistent development workflow
-
-🛠️ Running the Application
-1️⃣ Start the Database
-docker-compose up -d
-
-2️⃣ Run the Application
-
-Via IntelliJ:
-
-Run BancoDigitalApplication
-
-
-Or via terminal:
-
-./mvnw spring-boot:run
-
-
-Application runs at:
-
-http://localhost:8080
-
-🔗 API Endpoints
-🔹 Create Account
-POST /clientes
-
+Request Body:
 {
 "nome": "Rafael Dev",
 "cpf": "123.456.789-00",
 "email": "rafael@email.com",
-"senha": "securePassword123"
+"senha": "securePassword"
 }
 
-🔹 Login
-POST /auth/login
 
+2. Authentication (Login)
+   POST /auth/login
+
+Validates credentials and returns a JWT token.
+
+Request Body:
 {
-"numeroConta": "XXXX-X",
-"senha": "securePassword123"
+"numeroConta": "3868-43",
+"senha": "securePassword"
 }
 
-
-Returns:
-
-JWT Bearer Token
-
-🔹 List Accounts (Secure View)
-GET /contas
+Response:
+A String containing the signed JWT Bearer Token.
 
 
-Example response:
+3. List Accounts (Secure View)
+   GET /contas
 
+Returns public account data only.
+Requires Authorization header:
+
+Authorization: Bearer <your_token_here>
+
+Example Response:
 [
 {
-"id": 4,
-"numeroConta": "8877-X",
-"saldo": 1500.00,
+"numeroConta": "3868-43",
+"saldo": 1000.00,
 "nomeTitular": "Rafael Dev"
 }
 ]
 
-🔹 Transfer Between Accounts
-POST /contas/{idOrigem}/transferir/{idDestino}?valor=250.00&senha=securePassword123
+
+4. Transfer Between Accounts
+   POST /contas/transferir?numeroDestino=1122-33&valor=100.00
+
+The origin account is securely identified through the JWT token sent in the request header.
+
+Headers:
+Authorization: Bearer <your_token_here>
+
+Query Parameters:
+- numeroDestino
+- valor
+
+Validation Rules:
+- Authenticated identity verification
+- Sufficient balance validation
+- Prevention of unauthorized transfers
+- Atomic transaction guarantee
 
 
-Validation rules applied:
+HOW TO RUN
+----------
 
-Correct password
+1. Clone the repository:
 
-Sufficient balance
+git clone https://github.com/rafaelgfsouza/banco-digital-api.git
 
-Valid accounts
+2. Configure your PostgreSQL credentials in:
 
-Atomic transaction guarantee
+src/main/resources/application.properties
 
-🧠 Technical Decisions
+3. Run the application:
 
-DTO usage to prevent sensitive data leakage
+./mvnw spring-boot:run
 
-Centralized business rules in Service layer
+The application will start at:
 
-Security layer decoupled from domain logic
+http://localhost:8080
 
-Transaction management at service level
 
-Designed for scalability and maintainability
-
-📈 Future Improvements
-
-Unit tests with JUnit & Mockito
-
-Integration tests with Testcontainers
-
-API documentation with Swagger / OpenAPI
-
-Optimistic locking for concurrency control
-
-Cloud deployment (AWS / Railway / Render)
-
-CI/CD pipeline with GitHub Actions
-
-🎯 Project Purpose
+PROJECT PURPOSE
+---------------
 
 This project was developed to demonstrate:
 
-Strong backend engineering skills
+- Professional backend engineering standards
+- Secure financial transaction handling
+- Clean layered architecture
+- Strong authentication and identity control
+- Production-oriented coding practices
 
-Secure application design
 
-Clean architecture principles
-
-Financial transaction integrity
-
-Production-ready coding standards
+Developed by Rafael Souza.
