@@ -1,130 +1,200 @@
-🏦 API de Gerenciamento de Contas e Transferências Bancárias
+🏦 Banking API — Digital Account & Secure Transfer Management
 
-API REST desenvolvida com Java 17 e Spring Boot 3 para gerenciamento de contas bancárias e realização de transferências com foco em segurança, boas práticas e arquitetura profissional.
+A RESTful API for managing digital bank accounts and performing secure financial transfers, built with Java 17 and Spring Boot 3.
 
-🚀 Tecnologias e Conceitos Aplicados
+This project demonstrates backend engineering best practices, secure architecture design, domain modeling, and transactional consistency in financial operations.
 
-Este projeto foi construído priorizando segurança, organização e padrões de mercado:
+📌 Overview
 
-🔐 1. Proteção de Dados (DTO)
+The application provides:
 
-Implementação do padrão Data Transfer Object (DTO).
+Bank account creation
 
-Impede a exposição de dados sensíveis como:
+JWT-based authentication
 
-Senhas
+Secure account listing (DTO-based exposure)
 
-CPF
+Account-to-account transfers with full validation
 
-E-mails
+ACID-compliant transactional guarantees
 
-Apenas alguns dados são retornados nos endpoints para testes.
+Dockerized infrastructure for reproducible environments
 
-🔎 2. Lógica de Segurança
+🧱 Architecture
 
-Validação obrigatória da senha da conta de origem.
+The application follows a layered architecture:
 
-Verificação de saldo disponível antes da transferência.
+Controller → Service → Repository → Database
 
-Bloqueio da operação em caso de inconsistências.
+Responsibility Separation
 
-🗄️ 3. Persistência Profissional
+Controller → HTTP layer and request handling
 
-Integração com PostgreSQL.
+Service → Business rules and validation logic
 
-Utilização de Spring Data JPA para acesso a dados.
+Repository → Data persistence (Spring Data JPA)
 
-Modelagem baseada em boas práticas de ORM.
+DTOs → Data exposure control
 
-🐳 4. Infraestrutura com Docker
+Entities → Domain model representation
 
-Projeto configurado com docker-compose.
+Security Layer → Authentication & authorization (JWT)
 
-Facilidade para subir o banco de dados.
+This structure ensures maintainability, testability, and scalability.
 
-Ambiente padronizado para desenvolvimento.
+🚀 Tech Stack
 
-🔄 5. Transacionalidade (ACID)
+Java 17
 
-Uso da anotação @Transactional.
+Spring Boot 3
 
-Garantia de que a transferência seja:
+Spring Data JPA
 
-✔️ Totalmente concluída
+Spring Security
 
-❌ Ou totalmente cancelada em caso de erro
+JWT (Bearer Token Authentication)
 
-🛠️ Como Executar o Projeto
+PostgreSQL
 
-1️⃣ Subir o Banco de Dados (Docker)
+Docker & Docker Compose
+
+Maven
+
+🔐 Security & Data Protection
+✔️ DTO Pattern
+
+Sensitive information is never exposed through API responses.
+
+The following data is protected:
+
+Passwords
+
+CPF (Brazilian tax ID)
+
+Email
+
+Only safe, public-facing fields are returned via DTOs.
+
+✔️ Authentication & Authorization
+
+Authentication via /auth/login
+
+JWT token generation
+
+Bearer Token required for protected endpoints
+
+Password validation required before critical operations
+
+✔️ Business Rule Enforcement
+
+During transfers, the system validates:
+
+Correct origin account password
+
+Sufficient available balance
+
+Valid destination account
+
+Prevention of self-transfer
+
+Operation integrity before commit
+
+Any validation failure automatically aborts the operation.
+
+🔄 Transactional Consistency (ACID)
+
+The @Transactional annotation ensures full ACID compliance:
+
+Atomicity → The transfer fully succeeds or fully rolls back
+
+Consistency → The database never reaches an invalid state
+
+Isolation → Concurrent operations are handled safely
+
+Durability → Committed transactions are permanently stored
+
+This prevents critical financial inconsistencies such as debiting without crediting.
+
+🗄️ Persistence Layer
+
+PostgreSQL as relational database
+
+ORM via Spring Data JPA
+
+Proper entity mapping
+
+Clear separation between Entities and DTOs
+
+Clean repository abstraction
+
+🐳 Infrastructure
+
+The project includes Docker configuration for environment standardization.
+
+Start database:
 docker-compose up -d
 
-2️⃣ Executar a Aplicação
 
-Você pode iniciar a aplicação de duas formas:
+Benefits:
 
-▶️ Pelo IntelliJ: Executando a classe BancoDigitalApplication
+Reproducible environment
 
-▶️ Pelo terminal:
+Fast setup
+
+Isolation from local configuration issues
+
+Consistent development workflow
+
+🛠️ Running the Application
+1️⃣ Start the Database
+docker-compose up -d
+
+2️⃣ Run the Application
+
+Via IntelliJ:
+
+Run BancoDigitalApplication
+
+
+Or via terminal:
 
 ./mvnw spring-boot:run
 
 
-A aplicação iniciará em:
+Application runs at:
 
 http://localhost:8080
 
-🔗 Endpoints e Exemplos de Uso
-
-1️⃣ Criar uma Conta
-
-Endpoint:
-
-POST http://localhost:8080/clientes
+🔗 API Endpoints
+🔹 Create Account
+POST /clientes
 
 {
 "nome": "Rafael Dev",
 "cpf": "123.456.789-00",
 "email": "rafael@email.com",
-"senha": "minhasenha123"
+"senha": "securePassword123"
 }
 
-
----
-
-
-Login:
-
-http://localhost:8080/auth/login
+🔹 Login
+POST /auth/login
 
 {
-"numeroConta": "COLOQUE-AQUI-O-NUMERO-GERADO",
-"senha": "minhasenha123"
+"numeroConta": "XXXX-X",
+"senha": "securePassword123"
 }
 
----
 
-Transferencia:
-Com duas contas criadas com saldo:
-http://localhost:8080/contas/transferir?numeroDestino=123-X&valor=100.00
+Returns:
 
+JWT Bearer Token
 
-
-Auth bearer token criado devolvido no login.
-
----
-
-2️⃣ Listar Contas (Visão Segura)
-
-Endpoint:
-
+🔹 List Accounts (Secure View)
 GET /contas
 
 
-📌 Retorna apenas dados públicos via DTO.
-A senha e demais dados sensíveis são omitidos.
+Example response:
 
-📤 Exemplo de Resposta
 [
 {
 "id": 4,
@@ -134,32 +204,56 @@ A senha e demais dados sensíveis são omitidos.
 }
 ]
 
-3️⃣ Realizar Transferência
-
-Endpoint:
-
-POST /contas/{idOrigem}/transferir/{idDestino}
+🔹 Transfer Between Accounts
+POST /contas/{idOrigem}/transferir/{idDestino}?valor=250.00&senha=securePassword123
 
 
-📌 Parâmetros obrigatórios via Query Params:
+Validation rules applied:
 
-valor
+Correct password
 
-senha
+Sufficient balance
 
-📎 Exemplo de URL
-http://localhost:8080/contas/4/transferir/5?valor=250.00&senha=minhasenha123
+Valid accounts
 
-📌 Objetivo do Projeto
+Atomic transaction guarantee
 
-Projeto desenvolvido para portfólio técnico, com foco em:
+🧠 Technical Decisions
 
-Backend com Java
+DTO usage to prevent sensitive data leakage
 
-Segurança de Dados
+Centralized business rules in Service layer
 
-Boas práticas de arquitetura
+Security layer decoupled from domain logic
 
-Transações bancárias seguras
+Transaction management at service level
 
-Organização profissional de código
+Designed for scalability and maintainability
+
+📈 Future Improvements
+
+Unit tests with JUnit & Mockito
+
+Integration tests with Testcontainers
+
+API documentation with Swagger / OpenAPI
+
+Optimistic locking for concurrency control
+
+Cloud deployment (AWS / Railway / Render)
+
+CI/CD pipeline with GitHub Actions
+
+🎯 Project Purpose
+
+This project was developed to demonstrate:
+
+Strong backend engineering skills
+
+Secure application design
+
+Clean architecture principles
+
+Financial transaction integrity
+
+Production-ready coding standards
