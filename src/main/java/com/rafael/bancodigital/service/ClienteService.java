@@ -30,20 +30,26 @@ public class ClienteService {
 
         // 2. Cria a conta vinculada
         Conta novaConta = new Conta();
-        //novaConta.setSaldo(BigDecimal.ZERO);
-        novaConta.setSaldo(new BigDecimal("100.00")); // para testar transferências
+        // Definindo saldo inicial de 100 para testes
+        novaConta.setSaldo(new BigDecimal("100.00"));
         novaConta.setNumeroConta(gerarNumeroConta());
-        novaConta.setSenha(encoder.encode(dados.senha())); // Criptografa a senha do DTO
 
-        // 3. Vincula um ao outro
+        // MUITA ATENÇÃO AQUI: Verifique se o login busca a senha no Cliente ou na Conta.
+        // Se o seu AuthController busca no cliente, precisamos de um campo senha lá.
+        // Como o erro é "Conta não encontrada", vamos garantir o vínculo:
+        novaConta.setSenha(encoder.encode(dados.senha()));
+
+        // 3. Vinculo bi-direcional (Essencial para o JPA/Hibernate)
         novaConta.setCliente(cliente);
         cliente.setConta(novaConta);
 
+        // 4. Salva o cliente (o CascadeType.ALL no Cliente vai salvar a Conta automaticamente)
         return clienteRepository.save(cliente);
     }
 
     private String gerarNumeroConta() {
         Random random = new Random();
+        // Gera um formato tipo 1234-56
         return (random.nextInt(9000) + 1000) + "-" + (random.nextInt(90) + 10);
     }
 }

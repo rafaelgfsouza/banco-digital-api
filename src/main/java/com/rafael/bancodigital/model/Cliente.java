@@ -16,14 +16,12 @@ public class Cliente {
 
     private String email;
 
-    // --- RELAÇÃO COM A CONTA ---
-    // mappedBy: indica que o dono da relação é o campo "cliente" lá na classe Conta
-    // cascade: se eu salvar/deletar o cliente, a conta vai junto automaticamente
-    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
+    // fetch = FetchType.EAGER: Garante que a conta venha junto com o cliente no login
+    // cascade = CascadeType.ALL: Salva a conta automaticamente ao salvar o cliente
+    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Conta conta;
 
     // --- GETTERS E SETTERS ---
-
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

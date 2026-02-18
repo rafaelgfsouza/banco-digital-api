@@ -18,6 +18,9 @@ public class Conta {
     @JsonIgnore
     private String senha;
 
+    // @JsonIgnore aqui evita que o JSON tente desenhar o cliente dentro da conta
+    // e entre em loop infinito (o erro 500 que deu antes)
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
@@ -32,8 +35,8 @@ public class Conta {
     public BigDecimal getSaldo() { return saldo; }
     public void setSaldo(BigDecimal saldo) { this.saldo = saldo; }
 
-    public String getSenha() { return senha; } // Novo
-    public void setSenha(String senha) { this.senha = senha; } // Novo
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
 
     public Cliente getCliente() { return cliente; }
     public void setCliente(Cliente cliente) { this.cliente = cliente; }
